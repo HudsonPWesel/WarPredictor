@@ -43,6 +43,10 @@ def display_DataFrame():
 
 def run(epochs: int):
     """Run the simulation a set amount of times"""
+    for i in range(4):
+        for j in range(2, 15):
+            master_deck.append(j)
+
     for i in range(1, epochs+1):
         print(str(i) + " | " + "{:.2f}".format((i/epochs)*100) + "%")
         # % Program Finished
@@ -65,10 +69,6 @@ def set_decks():
     # Clear Player's Side-Deck From Prev Game
     player_one.side_deck.clear()
     player_two.side_deck.clear()
-
-    for i in range(4):
-        for j in range(2, 15):
-            master_deck.append(j)
 
     np.random.shuffle(master_deck)
 
@@ -168,7 +168,6 @@ def simulate_game():
     calc_win_losses()
 
     # Reset_counter
-
 
     # Shuffle Deck
 if __name__ == '__main__':
