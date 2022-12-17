@@ -26,6 +26,7 @@ def main():
 
 
 def display_DataFrame():
+    # MAKE DYNAMIC FRAME
     print(
         pd.DataFrame({
             "Single-Wars": num_single_wars,
@@ -60,6 +61,10 @@ def set_decks():
     # Clear Player's Deck From Prev. Game
     player_one.deck.clear()
     player_two.deck.clear()
+
+    # Clear Player's Side-Deck From Prev Game
+    player_one.side_deck.clear()
+    player_two.side_deck.clear()
 
     for i in range(4):
         for j in range(2, 15):
