@@ -1,3 +1,4 @@
+import math
 from Player import Player
 import numpy as np
 import pandas as pd
@@ -25,20 +26,42 @@ def main():
     run(i)
 
 
+def export_data(data):
+    data.to_csv("data.csv", index=False)
+
+
 def display_DataFrame():
     # MAKE DYNAMIC FRAME
-    print(
-        pd.DataFrame({
-            "Single-Wars": num_single_wars,
-            "Double-Wars": num_double_wars,
-            "Concated-Wars": num_concated_wars,
-            "Total-Wars": num_total_wars,
-            "Player-1-Wins": player_one.num_wins,
-            "Player-2-Wins": player_two.num_wins,
-            "Draws": num_draws,
+    # Have to subtract b/c double wars are their own thing, but got tallied as a single war at one point
 
-        })
-    )
+    data = pd.DataFrame({
+        "Single-Wars": num_single_wars,
+        "Single-War-Percentages": single_war_percentages[0],
+        "   Double-Wars": num_double_wars,
+        "Double-War-Percentages": double_war_percentages[0],
+        "   Concated-Wars": num_concated_wars,
+        "Concated-War-Percentages": concated_war_percentages[0],
+        "Total-Wars": num_total_wars,
+        "Player-1-Wins": player_one.num_wins,
+        "Player-2-Wins": player_two.num_wins,
+        "Draws": num_draws,
+
+    })
+    print(data)
+    export_data(data)
+
+
+def calc_data_percentages(epochs):
+    num_single_wars[0] -= (num_double_wars[0] + num_concated_wars[0])
+    num_total_wars[0] = num_single_wars[0] + \
+        num_double_wars[0] + num_concated_wars[0]
+
+    global single_war_percentages, double_war_percentages, concated_war_percentages
+
+    single_war_percentages = [(num_single_wars[0] / num_total_wars[0]) * 100]
+    double_war_percentages = [(num_double_wars[0] / num_total_wars[0]) * 100]
+    concated_war_percentages = [
+        (num_concated_wars[0] / num_total_wars[0]) * 100]
 
 
 def run(epochs: int):
@@ -53,6 +76,7 @@ def run(epochs: int):
 
         # Run one simulation (Saves output globally)
         simulate()
+    calc_data_percentages(epochs)
     display_DataFrame()
 
 
@@ -66,7 +90,7 @@ def set_decks():
     player_one.deck.clear()
     player_two.deck.clear()
 
-    # Clear Player's Side-Deck From Prev Game
+    # Clear Player's Side-Deck From Prev Game    player_one.side_deck.clear()
     player_one.side_deck.clear()
     player_two.side_deck.clear()
 
@@ -85,8 +109,7 @@ def win_round(winning_player, losing_player):
     for j in losing_player.war_hand:
         winning_player.side_deck.append(j)
         # Clear Side Deck
-    print(len(winning_player.side_deck))
-    print(len(losing_player.side_deck))
+
     # Add Drawn Cards to war_hand
     winning_player.war_hand.clear()
     losing_player.war_hand.clear()
@@ -96,16 +119,16 @@ def score_nth_war():
     global war_counter, num_single_wars, num_double_wars, num_concated_wars
     if(war_counter == 1):
         num_single_wars[0] += 1
-        num_total_wars[0] += 1
+
     elif(war_counter == 2):
         num_double_wars[0] += 1
-        num_total_wars[0] += 1
+
     else:
         num_concated_wars[0] += 1
-        num_total_wars[0] += 1
 
 
 def play_war():
+
     # Draw next three cards
     global war_counter
     if(player_one.has_cards_for_war() and player_two.has_cards_for_war()):
@@ -133,7 +156,7 @@ def simulate_round(player_one_war_card, player_two_war_card):
         win_round(player_two, player_one)
 
     else:
-        global war_counter
+        global war_counter, num_total_wars
         war_counter += 1
         score_nth_war()
         play_war()
@@ -168,6 +191,7 @@ def simulate_game():
     calc_win_losses()
 
     # Reset_counter
+
 
     # Shuffle Deck
 if __name__ == '__main__':
